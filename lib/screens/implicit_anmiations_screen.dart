@@ -27,18 +27,17 @@ class _ImplicitAnimationsScreenState extends State<ImplicitAnimationsScreen> {
         ),
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            AnimatedContainer(
-              curve: Curves.elasticOut,
-              transform: Matrix4.rotationZ(_visible ? 1 : 0),
-              transformAlignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: _visible ? Colors.red : Colors.amber,
-                borderRadius: BorderRadius.circular(_visible ? 100 : 0),
-              ),
-              duration: const Duration(seconds: 2),
-              width: size.width * 0.8,
-              height: size.width * 0.8,
-            ),
+            TweenAnimationBuilder(
+                tween: ColorTween(begin: Colors.purple, end: Colors.red),
+                curve: Curves.bounceInOut,
+                duration: const Duration(seconds: 5),
+                builder: (context, value, child) {
+                  return Image.network(
+                    "https://cdn-icons-png.flaticon.com/512/616/616495.png",
+                    color: value,
+                    colorBlendMode: BlendMode.colorBurn,
+                  );
+                }),
             const SizedBox(
               height: 10,
             ),
