@@ -28,6 +28,7 @@ class _ImplicitAnimationsScreenState extends State<ImplicitAnimationsScreen> {
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             AnimatedContainer(
+              curve: Curves.elasticOut,
               transform: Matrix4.rotationZ(_visible ? 1 : 0),
               transformAlignment: Alignment.center,
               decoration: BoxDecoration(
