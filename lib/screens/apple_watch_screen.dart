@@ -15,35 +15,35 @@ class _AppleWatchScreenState extends State<AppleWatchScreen>
     vsync: this,
     duration: const Duration(seconds: 2),
   )..forward();
-  final random = Random();
 
   late final CurvedAnimation _curve =
       CurvedAnimation(parent: _animationController, curve: Curves.bounceOut);
 
-  late final List<Animation<double>> _progresses = [];
+  List<double> initRandomValues =
+      List.generate(3, (index) => Random().nextDouble() * 2.0);
+
+  late List<Animation<double>> progressList = List.generate(
+      3,
+      (index) =>
+          Tween(begin: 0.005, end: initRandomValues[index]).animate(_curve));
 
   void _animateValues() {
-    for (var progress in _progresses) {
-      final newBegin = progress.value;
-      final newEnd = random.nextDouble() * 2.0;
-      setState(() {
-        progress = Tween(
-          begin: newBegin,
-          end: newEnd,
-        ).animate(_curve);
-      });
+    List<double> newBeginPoints =
+        List.generate(3, (index) => progressList[index].value);
+    List<double> randomNumbers =
+        List.generate(3, (index) => Random().nextDouble() * 2.0);
+    List<double> newEndPoints = List.generate(3, (index) => 0.0);
+    for (int i = 0; i < progressList.length; i++) {
+      newEndPoints[i] = randomNumbers[i];
     }
+
+    for (int i = 0; i < progressList.length; i++) {
+      progressList[i] =
+          Tween(begin: newBeginPoints[i], end: newEndPoints[i]).animate(_curve);
+    }
+    setState(() {});
 
     _animationController.forward(from: 0);
-  }
-
-  @override
-  void initState() {
-    for (var i = 0; i < 3; i++) {
-      _progresses.add(
-          Tween(begin: 0.05, end: random.nextDouble() * 2.0).animate(_curve));
-    }
-    super.initState();
   }
 
   @override
@@ -70,9 +70,9 @@ class _AppleWatchScreenState extends State<AppleWatchScreen>
         builder: (context, child) {
           return CustomPaint(
             painter: AppleWatchPainter(
-              redProgress: _progresses[0].value,
-              blueProgress: _progresses[1].value,
-              greenProgress: _progresses[2].value,
+              redProgress: progressList[0].value,
+              blueProgress: progressList[1].value,
+              greenProgress: progressList[2].value,
             ),
             size: const Size(400, 400),
           );
