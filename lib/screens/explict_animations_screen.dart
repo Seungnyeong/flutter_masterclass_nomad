@@ -71,6 +71,19 @@ class _ExplictAnimationScreenState extends State<ExplictAnimationScreen>
     _animationController.value = value;
   }
 
+  bool _looping = false;
+  void _toggleLopping() {
+    if (_looping) {
+      _animationController.stop();
+    } else {
+      _animationController.repeat(reverse: true);
+    }
+
+    setState(() {
+      _looping = !_looping;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +123,10 @@ class _ExplictAnimationScreenState extends State<ExplictAnimationScreen>
               ElevatedButton(
                 onPressed: _rewind,
                 child: const Text("rewind"),
+              ),
+              ElevatedButton(
+                onPressed: _toggleLopping,
+                child: Text(_looping ? "Stop lopping" : "Start lopping"),
               ),
             ],
           ),
