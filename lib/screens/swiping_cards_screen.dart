@@ -9,6 +9,8 @@ class SwipingCardsScreen extends StatefulWidget {
   State<SwipingCardsScreen> createState() => _SwipingCardsScreenState();
 }
 
+// 버튼 체크 버튼, x 버튼 체크버튼을 누르면 사진 이동, X를 누르면 반대로 넘겨야함
+// 아이콘의 버튼 새깔 (백그라운드 컬러 했던걸 기억해서 하면 됨) Tween이 필요해!!!
 class _SwipingCardsScreenState extends State<SwipingCardsScreen>
     with SingleTickerProviderStateMixin {
   late final size = MediaQuery.of(context).size;
@@ -31,6 +33,31 @@ class _SwipingCardsScreenState extends State<SwipingCardsScreen>
     end: 1,
   );
 
+  late final Tween<double> _buttonScale = Tween(
+    begin: 1.0,
+    end: 1.1,
+  );
+
+  late final ColorTween _cancelButtonBackgroundColor = ColorTween(
+    begin: Colors.white,
+    end: Colors.red,
+  );
+
+  late final ColorTween _cancelButtonIconColor = ColorTween(
+    begin: Colors.red,
+    end: Colors.white,
+  );
+
+  late final ColorTween _checkButtonBackgroundColor = ColorTween(
+    begin: Colors.white,
+    end: Colors.green,
+  );
+
+  late final ColorTween _checkButtonIconColor = ColorTween(
+    begin: Colors.green,
+    end: Colors.white,
+  );
+
   void _onHorizontalDragUpate(DragUpdateDetails details) {
     _position.value += details.delta.dx;
   }
@@ -46,6 +73,15 @@ class _SwipingCardsScreenState extends State<SwipingCardsScreen>
     } else {
       _position.animateTo(0, curve: Curves.bounceOut);
     }
+  }
+
+  void _onCheckPress(bool isNegative) {
+    final dropZone = size.width + 100;
+    _position
+        .animateTo(dropZone * (isNegative ? -1 : 1),
+            curve: Curves.bounceOut,
+            duration: const Duration(milliseconds: 1000))
+        .whenComplete(_whenComplete);
   }
 
   void _whenComplete() {
@@ -77,6 +113,20 @@ class _SwipingCardsScreenState extends State<SwipingCardsScreen>
               pi /
               180;
           final scale = _scale.transform(_position.value.abs() / size.width);
+          final buttonScale =
+              _buttonScale.transform(_position.value.abs() / size.width);
+
+          final cancelButtonBackgroundColor = _cancelButtonBackgroundColor
+              .transform(_position.value.abs() / (size.width + 100));
+
+          final cancelButtonIconColor = _cancelButtonIconColor
+              .transform(_position.value.abs() / (size.width + 100));
+
+          final checkButtonBackgroundColor = _checkButtonBackgroundColor
+              .transform(_position.value.abs() / (size.width + 100));
+
+          final checkButtonIconColor = _checkButtonIconColor
+              .transform(_position.value.abs() / (size.width + 100));
           return Stack(
             alignment: Alignment.topCenter,
             children: [
@@ -101,6 +151,82 @@ class _SwipingCardsScreenState extends State<SwipingCardsScreen>
                           index: _index,
                         )),
                   ),
+                ),
+              ),
+              Positioned(
+                bottom: 100,
+                child: Row(
+                  children: [
+                    Transform.scale(
+                      scale: _position.value.isNegative ? buttonScale : 1.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _position.value.isNegative
+                              ? cancelButtonBackgroundColor
+                              : Colors.white,
+                          boxShadow: const <BoxShadow>[
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10.0,
+                              spreadRadius: 0,
+                              offset: Offset(0.0, 10.0),
+                            ),
+                          ],
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 5,
+                          ),
+                        ),
+                        child: IconButton(
+                          onPressed: () =>
+                              _onCheckPress(_position.value.isNegative),
+                          icon: Icon(
+                            Icons.close_rounded,
+                            size: 60,
+                            color: _position.value.isNegative
+                                ? cancelButtonIconColor
+                                : Colors.red,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 30),
+                    Transform.scale(
+                      scale: !_position.value.isNegative ? buttonScale : 1.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: !_position.value.isNegative
+                              ? checkButtonBackgroundColor
+                              : Colors.white,
+                          boxShadow: const <BoxShadow>[
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10.0,
+                              spreadRadius: 0,
+                              offset: Offset(0.0, 10.0),
+                            ),
+                          ],
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 5,
+                          ),
+                        ),
+                        child: IconButton(
+                          onPressed: () =>
+                              _onCheckPress(_position.value.isNegative),
+                          icon: Icon(
+                            Icons.check,
+                            size: 60,
+                            color: !_position.value.isNegative
+                                ? checkButtonIconColor
+                                : Colors.green,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
             ],
