@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 
@@ -11,8 +13,11 @@ class RvieScreenState extends StatefulWidget {
 class _RvieScreenStateState extends State<RvieScreenState> {
   late final StateMachineController _stateMachineController;
   void _onInit(Artboard artboard) {
-    _stateMachineController =
-        StateMachineController.fromArtboard(artboard, "state")!;
+    _stateMachineController = StateMachineController.fromArtboard(
+      artboard,
+      "state",
+      onStateChange: (stateMachineName, stateName) {},
+    )!;
 
     artboard.addController(_stateMachineController);
   }
@@ -32,26 +37,26 @@ class _RvieScreenStateState extends State<RvieScreenState> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rive'),
-      ),
-      body: Center(
-          child: Column(
+      body: Stack(
         children: [
-          SizedBox(
-            height: 400,
-            width: double.infinity,
-            child: RiveAnimation.asset(
-              "assets/animations/old-man-animation.riv",
-              artboard: "main",
-              stateMachines: const ["state"],
-              fit: BoxFit.cover,
-              onInit: _onInit,
-            ),
+          const RiveAnimation.asset(
+            "assets/animations/balls-animation.riv",
+            fit: BoxFit.cover,
           ),
-          ElevatedButton(onPressed: _togglePannel, child: const Text('Go!'))
+          Positioned.fill(
+              child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 30),
+            child: const Center(
+              child: Text(
+                "Welcome to AI App",
+                style: TextStyle(
+                  fontSize: 28,
+                ),
+              ),
+            ),
+          ))
         ],
-      )),
+      ),
     );
   }
 }
